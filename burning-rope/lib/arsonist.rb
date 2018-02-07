@@ -11,19 +11,23 @@ class Arsonist
 
     while current
       explored << current
-      x = current.x
-      y = current.y
-      distance = current.distance + 1
-      add_to_queue(frontier, explored, rope, x - 1, y, distance)
-      add_to_queue(frontier, explored, rope, x + 1, y, distance)
-      add_to_queue(frontier, explored, rope, x, y - 1, distance)
-      add_to_queue(frontier, explored, rope, x, y + 1, distance)
+      add_neighbours(frontier, explored, rope, current)
       current = frontier.pop
     end
     explored.map(&:distance).max
   end
 
   private
+
+  def add_neighbours(frontier, explored, rope, current)
+    x = current.x
+    y = current.y
+    distance = current.distance + 1
+    add_to_queue(frontier, explored, rope, x - 1, y, distance)
+    add_to_queue(frontier, explored, rope, x + 1, y, distance)
+    add_to_queue(frontier, explored, rope, x, y - 1, distance)
+    add_to_queue(frontier, explored, rope, x, y + 1, distance)
+  end
 
   def add_to_queue(frontier, explored, rope, x, y, distance)
     point = Point.new(x, y, distance)

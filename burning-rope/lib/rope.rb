@@ -4,6 +4,7 @@ class Rope
   end
 
   def rope?(x, y)
-    x >= 0 && x < @rope.length && y >= 0 && y < @rope[x].length && @rope[x][y] == 'R'
+    inside_boundries = x >= 0 && x < @rope.size && y >= 0 && y < @rope[x].size
+    inside_boundries && @rope[x][y] == 'R'
   end
 end
