@@ -14,17 +14,27 @@ class Solver
   end
 
   def solve_using_ratio(max_weight)
-    bag = Bag.new(max_weight) 
+    bags = [Bag.new(max_weight)]
+    added_item = false
+
     items_by_ratio = @items.sort { |a, b| a.ratio <=> b.ratio }.reverse
     items_by_ratio.each do |item|
-      if bag.enough_space?(item)
-        bag.add_item(item)
+      bags.each do |bag|
+        added_item = bag.add_item_if_enough_space(item)
+        break if added_item
       end
+      
+      if added_item
+        added_item = false
+      else
+        bag = Bag.new(max_weight)
+        if bag.add_item_if_enough_space(item)
+          bags << bag
+        end
+      end
+
     end
-    bag
+    
+    bags.max_by(&:price)
   end
-
 end
-
-solver = Solver.new('inputs/greedy.in')
-puts solver.solve_using_ratio(10).items

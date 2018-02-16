@@ -6,12 +6,10 @@ class Bag
     @items = []
   end
 
-  def enough_space?(item)
-    weight + item.weight <= @max_weight   
-  end
-
-  def add_item(item)
-    @items << item    
+  def add_item_if_enough_space(item)
+    result = enough_space?(item)
+    add_item(item) if result
+    result
   end
 
   def weight
@@ -21,4 +19,15 @@ class Bag
   def price
     @items.inject(0) { |sum, x| sum + x.price }
   end
+  
+  private
+
+  def enough_space?(item)
+    weight + item.weight <= @max_weight   
+  end
+
+  def add_item(item)
+    @items << item    
+  end
+
 end
