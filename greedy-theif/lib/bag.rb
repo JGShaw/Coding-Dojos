@@ -19,15 +19,14 @@ class Bag
   def price
     @items.inject(0) { |sum, x| sum + x.price }
   end
-  
+
   private
 
   def enough_space?(item)
-    weight + item.weight <= @max_weight   
+    weight + item.weight <= @max_weight
   end
 
   def add_item(item)
-    @items << item    
+    @items << item
   end
-
 end
