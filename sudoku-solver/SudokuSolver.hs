@@ -3,43 +3,34 @@ module SudokuSolver where
 import Data.Either
 import Data.List
 
-type Value = Either Integer [Integer]
-type Square = (Integer, Value)
+type Square = (Integer, Integer)
 type Sudoku = [Square]
 
 solve :: [Integer] -> [Integer]
-solve input = map square_to_int solved
+solve input = map snd solved
   where
-    sudoku = zip [0..] (map int_to_value input)
+    sudoku = zip [0..] input
     solved = solve' sudoku
-
-int_to_value :: Integer -> Value
-int_to_value 0 = Right []
-int_to_value x = Left x
-
-square_to_int :: Square -> Integer
-square_to_int (_, Left x) = x
-square_to_int (_, Right _) = 0
 
 solve' :: Sudoku -> Sudoku
 solve' input = if finished then populated else solve' populated
   where
     populated = fill_in_possibles input input
-    finished = all (\(_, sq) -> isLeft sq) populated
+    finished = all (\(_, value) -> value /= 0) populated
 
 fill_in_possibles :: Sudoku -> Sudoku -> Sudoku
 fill_in_possibles [] _ = []
 fill_in_possibles (square@(index, value) : tl) reference 
-  | isLeft value = square : rec_call
-  | isRight value = new_square : rec_call
+  | value /= 0 = square : rec_call
+  | otherwise = new_square : rec_call
   where
     conflicting_values = get_knowns (conflicting_indecies index) reference
     possibles = [1..9] \\ conflicting_values 
-    new_square = (index, if length possibles == 1 then Left (head possibles) else Right possibles)
+    new_square = (index, if length possibles == 1 then (head possibles) else 0)
     rec_call = fill_in_possibles tl reference
 
 get_knowns :: [Integer] -> Sudoku -> [Integer]
-get_knowns indecies puzzle = lefts $ map snd $ filter (\(i, _) -> i `elem` indecies) puzzle
+get_knowns indecies puzzle = map snd $ filter (\(i, value) -> i `elem` indecies && value /= 0) puzzle
 
 conflicting_indecies :: Integer -> [Integer]
 conflicting_indecies index = filter (\x -> row x || column x || (sq_column x && sq_row x) ) [0..80]
