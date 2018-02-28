@@ -21,11 +21,11 @@ solve' input = if finished then populated else solve' populated
 fill_in_possibles :: Sudoku -> Square -> Square
 fill_in_possibles reference (index, 0) = (index, if length possibles == 1 then (head possibles) else 0)
   where 
-    possibles = [1..9] \\ (map snd $ get_knowns reference index)
+    possibles = [1..9] \\ (get_knowns reference index)
 fill_in_possibles _ square = square
 
-get_knowns :: Sudoku -> Integer -> [Square]
-get_knowns sudoku index = filter (\(i, value) -> (is_index_conflicting i index) && value /= 0) sudoku
+get_knowns :: Sudoku -> Integer -> [Integer]
+get_knowns sudoku index = map snd $ filter (\(i, value) -> (is_index_conflicting i index) && value /= 0) sudoku
 
 is_index_conflicting :: Integer -> Integer -> Bool
 is_index_conflicting x1 x2 = row || column || (sq_column && sq_row)
