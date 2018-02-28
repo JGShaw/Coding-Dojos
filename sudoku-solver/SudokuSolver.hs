@@ -42,12 +42,9 @@ get_knowns :: [Integer] -> Sudoku -> [Integer]
 get_knowns indecies puzzle = lefts $ map snd $ filter (\(i, _) -> i `elem` indecies) puzzle
 
 conflicting_indecies :: Integer -> [Integer]
-conflicting_indecies index = filter (\x -> 
-                                    (row index == row x) ||
-                                    (column index == column x) ||
-                                    (sq_column index == sq_column x && sq_row index == sq_row x) ) [0..80]
+conflicting_indecies index = filter (\x -> row x || column x || (sq_column x && sq_row x) ) [0..80]
   where
-    row = \x -> x `div` 9
-    column = \x -> x `mod` 9
-    sq_row = \x -> x `div` 27 
-    sq_column = \x -> (x `div` 3) `mod` 3    
+    row = \x -> x `div` 9 == index `div` 9
+    column = \x -> x `mod` 9 == index `mod` 9
+    sq_row = \x -> x `div` 27 == index `div` 27 
+    sq_column = \x -> (x `div` 3) `mod` 3 == (index `div` 3) `mod` 3
