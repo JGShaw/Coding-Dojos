@@ -16,26 +16,23 @@ solve' :: Sudoku -> Sudoku
 solve' input = if finished then populated else solve' populated
   where
     populated = fill_in_possibles input input
-    finished = all (\(_, value) -> value /= 0) populated
+    finished = all ((/=0) . snd) populated
 
 fill_in_possibles :: Sudoku -> Sudoku -> Sudoku
 fill_in_possibles [] _ = []
-fill_in_possibles (square@(index, value) : tl) reference 
-  | value /= 0 = square : rec_call
-  | otherwise = new_square : rec_call
-  where
-    conflicting_values = get_knowns (conflicting_indecies index) reference
-    possibles = [1..9] \\ conflicting_values 
+fill_in_possibles ((index, 0) : tl) reference = new_square : fill_in_possibles tl reference
+  where 
+    possibles = [1..9] \\ (map snd $ get_knowns index reference)
     new_square = (index, if length possibles == 1 then (head possibles) else 0)
-    rec_call = fill_in_possibles tl reference
+fill_in_possibles (square : tl) reference = square : fill_in_possibles tl reference
 
-get_knowns :: [Integer] -> Sudoku -> [Integer]
-get_knowns indecies puzzle = map snd $ filter (\(i, value) -> i `elem` indecies && value /= 0) puzzle
+get_knowns :: Integer -> Sudoku -> [Square]
+get_knowns index puzzle = filter (\(i, value) -> (is_index_conflicting i index) && value /= 0) puzzle
 
-conflicting_indecies :: Integer -> [Integer]
-conflicting_indecies index = filter (\x -> row x || column x || (sq_column x && sq_row x) ) [0..80]
+is_index_conflicting :: Integer -> Integer -> Bool
+is_index_conflicting x1 x2 = row || column || (sq_column && sq_row)
   where
-    row = \x -> x `div` 9 == index `div` 9
-    column = \x -> x `mod` 9 == index `mod` 9
-    sq_row = \x -> x `div` 27 == index `div` 27 
-    sq_column = \x -> (x `div` 3) `mod` 3 == (index `div` 3) `mod` 3
+    row = x1 `div` 9 == x2 `div` 9
+    column = x1 `mod` 9 == x2 `mod` 9
+    sq_row = x1 `div` 27 == x2 `div` 27 
+    sq_column = (x1 `div` 3) `mod` 3 == (x2 `div` 3) `mod` 3
