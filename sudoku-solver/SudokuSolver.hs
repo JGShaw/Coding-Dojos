@@ -15,16 +15,14 @@ solve input = map snd solved
 solve' :: Sudoku -> Sudoku
 solve' input = if finished then populated else solve' populated
   where
-    populated = fill_in_possibles input input
-    finished = all ((/=0) . snd) populated
+    populated = map (fill_in_possibles input) input
+    finished = all ((/= 0) . snd) populated
 
-fill_in_possibles :: Sudoku -> Sudoku -> Sudoku
-fill_in_possibles [] _ = []
-fill_in_possibles ((index, 0) : tl) reference = new_square : fill_in_possibles tl reference
+fill_in_possibles :: Sudoku -> Square -> Square
+fill_in_possibles reference (index, 0) = (index, if length possibles == 1 then (head possibles) else 0)
   where 
     possibles = [1..9] \\ (map snd $ get_knowns index reference)
-    new_square = (index, if length possibles == 1 then (head possibles) else 0)
-fill_in_possibles (square : tl) reference = square : fill_in_possibles tl reference
+fill_in_possibles _ square = square
 
 get_knowns :: Integer -> Sudoku -> [Square]
 get_knowns index puzzle = filter (\(i, value) -> (is_index_conflicting i index) && value /= 0) puzzle
