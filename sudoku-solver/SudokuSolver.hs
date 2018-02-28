@@ -33,21 +33,20 @@ fill_in_possibles (square@(index, value) : tl) reference
   | isLeft value = square : rec_call
   | isRight value = new_square : rec_call
   where
-    numbers_in_row = get_knowns (\(i, _) -> i `div` 9 == index `div` 9) reference
-    numbers_in_column = get_knowns (\(i, _) -> i `mod` 9 == index `mod` 9) reference
-    numbers_in_square = get_knowns (\(i, _) -> i `elem` square_indecies index ) reference
-    possibles = [1..9] \\ (numbers_in_row ++ numbers_in_column ++ numbers_in_square)
+    impossible_indecies = (row_indecies index) ++ (column_indecies index) ++ (square_indecies index)
+    impossible_values = get_knowns impossible_indecies reference
+    possibles = [1..9] \\ impossible_values 
     new_square = (index, if length possibles == 1 then Left (head possibles) else Right possibles)
     rec_call = fill_in_possibles tl reference
 
-get_knowns :: (Square -> Bool) -> Sudoku -> [Integer]
-get_knowns pred puzzle = lefts $ map snd $ filter pred puzzle
+get_knowns :: [Integer] -> Sudoku -> [Integer]
+get_knowns indecies puzzle = lefts $ map snd $ filter (\(i, _) -> i `elem` indecies) puzzle
 
 row_indecies :: Integer -> [Integer]
-row_indecies index = []
+row_indecies index = filter (\x -> index `div` 9 == x `div` 9) [0..80]
 
 column_indecies :: Integer -> [Integer]
-column_indecies index = []
+column_indecies index = filter (\x -> index `mod` 9 == x `mod` 9) [0..80]
 
 square_indecies :: Integer -> [Integer]
 square_indecies index = filter (\x -> (column index == column x && row index == row x)) [0..80]
