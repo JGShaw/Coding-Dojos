@@ -1,6 +1,5 @@
 module SudokuSolver where
 
-import Data.Either
 import Data.List
 
 type Square = (Integer, Integer)
