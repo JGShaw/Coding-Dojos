@@ -10,7 +10,7 @@ data Tree a = Empty | Leaf a Int | Node (Tree a) (Tree a)
 encode :: Eq a => Ord a => [a] -> (Tree a, String)
 encode s = (tree, encoded) 
   where
-    chars = map (\xs -> (head xs, length xs))  (group $ sort s)
+    chars = map (\xs -> (head xs, length xs)) $ group $ sort s
     leaves = sort_trees $ map (\(val, count) -> Leaf val count) chars 
     tree = encode' leaves
     encoded = concatMap (fromJust . tree_encode tree) s
@@ -21,13 +21,12 @@ encode' [hd] = hd
 encode' (hd1 : hd2 : tl) = encode' $ sort_trees $ Node hd1 hd2 : tl
 
 sort_trees :: [Tree a] -> [Tree a]
-sort_trees = sortBy (\a b -> compare (tree_sum a) (tree_sum b))
+sort_trees = sortBy $ \a b -> compare (tree_sum a) (tree_sum b)
 
 tree_sum :: Tree a -> Int
 tree_sum Empty = 0
 tree_sum (Leaf _ x) = x
-tree_sum (Node t1 t2) = (tree_sum t1) + (tree_sum t2)
-
+tree_sum (Node t1 t2) = tree_sum t1 + tree_sum t2
 
 decode :: Tree a -> String -> [a]
 decode (Leaf a _) _ = [a]
