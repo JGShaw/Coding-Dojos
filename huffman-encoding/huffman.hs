@@ -10,8 +10,7 @@ data Tree a = Empty | Leaf a Int | Node (Tree a) (Tree a)
 encode :: Eq a => Ord a => [a] -> (Tree a, String)
 encode s = (tree, encoded) 
   where
-    chars = map (\xs -> (head xs, length xs)) $ group $ sort s
-    leaves = sort_trees $ map (\(val, count) -> Leaf val count) chars 
+    leaves = sort_trees $ map (\xs -> Leaf (head xs) (length xs)) $ group $ sort s 
     tree = fold_trees leaves
     encoded = concatMap (fromJust . tree_encode tree) s
     
