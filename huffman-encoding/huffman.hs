@@ -7,13 +7,21 @@ import Data.List
 data Tree a = Empty | Leaf a Int | Node (Tree a) (Tree a) 
   deriving (Show, Eq)
 
-encode :: Eq a => Ord a => [a] -> (Tree a, String)
+type Encoding = String
+
+encode :: Eq a => [a] -> (Tree a, Encoding)
 encode s = (tree, encoded) 
   where
-    leaves = sort_trees $ map (\xs -> Leaf (head xs) (length xs)) $ group $ sort s 
+    leaves = sort_trees $ map (\xs -> Leaf (head xs) (length xs)) $ group_elems s 
     tree = fold_trees leaves
     encoded = concatMap (fromJust . tree_encode tree) s
     
+group_elems :: Eq a => [a] -> [[a]]
+group_elems [] = []
+group_elems xs = match : group_elems not_match 
+  where
+    (match, not_match) = partition ((==) (head xs)) xs
+
 fold_trees :: [Tree a] -> Tree a
 fold_trees [] = Empty
 fold_trees [hd] = hd
@@ -27,7 +35,7 @@ tree_sum Empty = 0
 tree_sum (Leaf _ x) = x
 tree_sum (Node t1 t2) = tree_sum t1 + tree_sum t2
 
-tree_encode :: Eq a => Tree a -> a -> Maybe String
+tree_encode :: Eq a => Tree a -> a -> Maybe Encoding
 tree_encode Empty _ = Nothing 
 tree_encode (Leaf x _) symbol = if x == symbol then Just "" else Nothing
 tree_encode (Node t1 t2) symbol
@@ -38,11 +46,11 @@ tree_encode (Node t1 t2) symbol
     zero = tree_encode t1 symbol
     one = tree_encode t2 symbol
 
-decode :: Tree a -> String -> [a]
+decode :: Tree a -> Encoding -> [a]
 decode (Leaf a _) _ = [a]
 decode tree input = decode' tree input []
 
-decode' :: Tree a -> String -> String-> [a]
+decode' :: Tree a -> Encoding -> Encoding-> [a]
 decode' _ [] _ = []
 decode' tree (hd : tl) prefix
   | isJust result = fromJust result : decode' tree tl []
@@ -51,7 +59,7 @@ decode' tree (hd : tl) prefix
     new_prefix = prefix ++ [hd]
     result = tree_decode tree new_prefix
 
-tree_decode :: Tree a -> String -> Maybe a
+tree_decode :: Tree a -> Encoding -> Maybe a
 tree_decode (Leaf x _) [] = Just x
 tree_decode (Node zero one) (hd : tl)
   | hd == '0' = tree_decode zero tl
