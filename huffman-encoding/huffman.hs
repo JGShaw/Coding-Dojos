@@ -9,8 +9,8 @@ data Tree a = Empty | Leaf a Int | Node (Tree a) (Tree a)
 
 type Encoding = String
 
-encode :: Eq a => [a] -> (Tree a, Encoding)
-encode s = (tree, encoded) 
+encode :: Eq a => [a] -> ((Encoding -> [a]), Encoding)
+encode s = (decode tree, encoded) 
   where
     leaves = sort_trees $ map (\xs -> Leaf (head xs) (length xs)) $ group_elems s 
     tree = fold_trees leaves
