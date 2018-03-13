@@ -13,5 +13,5 @@ main = hspec $ do
       let tree = Node (Leaf 'a' 4) (Node (Leaf 'c' 2) (Leaf 'b' 1))
       decode tree "0000111010" `shouldBe` "aaaabcc"
     
-    it "encode / decode test" $
+    it "encode / decode property" $
       property $ \x -> (fst $ encode x) (snd $ encode x) == (x :: String)
