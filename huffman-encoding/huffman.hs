@@ -17,7 +17,7 @@ encode s = (tree, encoded)
 fold_trees :: [Tree a] -> Tree a
 fold_trees [] = Empty
 fold_trees [hd] = hd
-fold_trees (hd1 : hd2 : tl) = fold_trees $ sort_trees $ Node hd1 hd2 : tl
+fold_trees (hd1 : hd2 : tl) = fold_trees $ sort_trees $ Node hd2 hd1 : tl
 
 sort_trees :: [Tree a] -> [Tree a]
 sort_trees = sortBy $ \a b -> compare (tree_sum a) (tree_sum b)
