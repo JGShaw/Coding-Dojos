@@ -48,16 +48,11 @@ tree_encode (Node t1 t2) symbol
 
 decode :: Tree a -> Encoding -> [a]
 decode (Leaf a _) _ = [a]
-decode tree input = decode' tree input []
-
-decode' :: Tree a -> Encoding -> Encoding-> [a]
-decode' _ [] _ = []
-decode' tree (hd : tl) prefix
-  | isJust result = fromJust result : decode' tree tl []
-  | otherwise = decode' tree tl new_prefix
-  where  
-    new_prefix = prefix ++ [hd]
-    result = tree_decode tree new_prefix
+decode tree [] = []
+decode tree input = symbol : decode tree (drop index input)
+  where
+    prefixs = map (\x -> tree_decode tree x) $ inits input 
+    (index, Just symbol) = fromJust $ find (\(a,b) -> isJust b) (zip [0..] prefixs)
 
 tree_decode :: Tree a -> Encoding -> Maybe a
 tree_decode (Leaf x _) [] = Just x
