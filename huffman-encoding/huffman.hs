@@ -4,8 +4,7 @@ import Data.Tuple
 import Data.Maybe
 import Data.List
 
-data Tree a = Empty | Leaf a Int | Node (Tree a) (Tree a) 
-  deriving (Show, Eq)
+data Tree a = Empty | Leaf a Int | Node (Tree a) (Tree a) deriving (Show, Eq)
 data Symbol = Zero | One deriving (Show, Eq)
 type Encoding = [Symbol]
 
@@ -37,18 +36,18 @@ tree_sum (Node t1 t2) = tree_sum t1 + tree_sum t2
 
 tree_encode :: Eq a => Tree a -> a -> Maybe Encoding
 tree_encode Empty _ = Nothing 
-tree_encode (Leaf x _) symbol = if x == symbol then Just [] else Nothing
+tree_encode (Leaf value _) symbol = if value == symbol then Just [] else Nothing
 tree_encode (Node t1 t2) symbol
-  | isJust zero = Just $ Zero : fromJust zero
-  | isJust one = Just $ One : fromJust one
+  | isJust zero_tree = Just $ Zero : fromJust zero_tree
+  | isJust one_tree = Just $ One : fromJust one_tree
   | otherwise = Nothing
   where
-    zero = tree_encode t1 symbol
-    one = tree_encode t2 symbol
+    zero_tree = tree_encode t1 symbol
+    one_tree = tree_encode t2 symbol
 
 decode :: Tree a -> Encoding -> [a]
 decode (Leaf a _) _ = [a]
-decode tree [] = []
+decode _ [] = []
 decode tree input = symbol : decode tree (drop prefix_length input)
   where
     matching_symbols = map (tree_decode tree) $ inits input 
