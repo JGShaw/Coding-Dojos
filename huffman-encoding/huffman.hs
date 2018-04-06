@@ -6,8 +6,8 @@ import Data.List
 
 data Tree a = Empty | Leaf a Int | Node (Tree a) (Tree a) 
   deriving (Show, Eq)
-
-type Encoding = String
+data Symbol = Zero | One deriving (Show, Eq)
+type Encoding = [Symbol]
 
 encode :: Eq a => [a] -> ((Encoding -> [a]), Encoding)
 encode s = (decode tree, encoded) 
@@ -37,10 +37,10 @@ tree_sum (Node t1 t2) = tree_sum t1 + tree_sum t2
 
 tree_encode :: Eq a => Tree a -> a -> Maybe Encoding
 tree_encode Empty _ = Nothing 
-tree_encode (Leaf x _) symbol = if x == symbol then Just "" else Nothing
+tree_encode (Leaf x _) symbol = if x == symbol then Just [] else Nothing
 tree_encode (Node t1 t2) symbol
-  | isJust zero = Just $ '0' : fromJust zero
-  | isJust one = Just $ '1' : fromJust one
+  | isJust zero = Just $ Zero : fromJust zero
+  | isJust one = Just $ One : fromJust one
   | otherwise = Nothing
   where
     zero = tree_encode t1 symbol
@@ -57,6 +57,6 @@ decode tree input = symbol : decode tree (drop prefix_length input)
 tree_decode :: Tree a -> Encoding -> Maybe a
 tree_decode (Leaf x _) [] = Just x
 tree_decode (Node zero one) (hd : tl)
-  | hd == '0' = tree_decode zero tl
-  | hd == '1' = tree_decode one tl
+  | hd == Zero = tree_decode zero tl
+  | hd == One = tree_decode one tl
 tree_decode _ _  = Nothing
