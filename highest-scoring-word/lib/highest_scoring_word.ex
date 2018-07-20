@@ -8,8 +8,7 @@ defmodule HighestScoringWord do
 
   def score_for_word(word) do
     String.to_charlist(word)
-    |> Enum.map(fn char -> char - (?a - 1) end)
+    |> Enum.map(&(&1 - (?a - 1)))
     |> Enum.sum
   end
-
 end
