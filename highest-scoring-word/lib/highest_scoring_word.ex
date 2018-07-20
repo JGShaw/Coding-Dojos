@@ -2,7 +2,7 @@ defmodule HighestScoringWord do
   def high(str) do
     words = String.split(str, " ")
     pairs = Enum.zip(words, Enum.map(words, &score_for_word/1))
-    Enum.max_by(pairs, fn {a, b} -> b end)
+    Enum.max_by(pairs, fn {_, b} -> b end)
     |> elem(0)
   end
 
