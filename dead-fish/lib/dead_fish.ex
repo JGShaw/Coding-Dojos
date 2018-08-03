@@ -8,7 +8,7 @@ defmodule DeadFish do
       "d" -> parse_list(tail, num - 1)
       "s" -> parse_list(tail, num * num)
       "o" -> [num | parse_list(tail, num)]
-      _ -> parse_list(tail, num)
+      _   -> parse_list(tail, num)
     end
   end
 end
